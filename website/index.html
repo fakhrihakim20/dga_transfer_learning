@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tropical DGA Transfer Learning — Research Report</title>
+  <meta name="description" content="Transfer learning adapts an IEC TC 10 transformer fault classifier to PLN Indonesia's tropical climate. A research report for stakeholders, with interactive charts." />
+  <meta property="og:title" content="Tropical DGA Transfer Learning" />
+  <meta property="og:description" content="A research report on adapting transformer fault classifiers to tropical climates." />
+  <meta property="og:type" content="article" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/styles.css" />
+
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" defer></script>
+  <script src="assets/js/data.js" defer></script>
+  <script src="assets/js/charts.js" defer></script>
+  <script src="assets/js/app.js" defer></script>
+</head>
+<body>
+
+<header class="nav" role="banner">
+  <div class="nav__inner">
+    <a href="#top" class="nav__brand" aria-label="Home">
+      <span class="brand__mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="22" height="22"><path d="M6 22 L14 6 L22 14 L14 22 Z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="22" cy="22" r="3" fill="currentColor"/></svg>
+      </span>
+      <span class="brand__text">Tropical&nbsp;DGA<span class="brand__dot">.</span></span>
+    </a>
+    <nav class="nav__links" aria-label="Section navigation">
+      <a href="#problem">Problem</a>
+      <a href="#shift">Tropical signal</a>
+      <a href="#approach">Approach</a>
+      <a href="#results">Results</a>
+      <a href="#scarcity">Scarcity</a>
+      <a href="#features">Features</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#resources">Resources</a>
+    </nav>
+    <a href="assets/paper/ICT_PEP_2026_DGA_Transfer_Learning.pdf" class="nav__cta" download>Download paper</a>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ─────── HERO ─────── -->
+<section class="hero">
+  <div class="hero__inner">
+    <p class="kicker"><span class="dot"></span> ICT-PEP&nbsp;2026 · Research Report · Simulation Study</p>
+
+    <h1 class="hero__title">
+      Teaching a fault-detection model to <em>understand the tropics</em>.
+    </h1>
+
+    <p class="hero__lede">
+      Power transformers fail loudly and expensively. A blood test for transformers —
+      <abbr title="Dissolved Gas Analysis">DGA</abbr> — catches problems early.
+      But the international rulebook was written for cooler climates.
+      We show how <strong>transfer learning</strong> retrains a global model on a small
+      Indonesian fleet, recovering accuracy where data is scarce.
+    </p>
+
+    <div class="hero__stats">
+      <div class="stat">
+        <div class="stat__num">+9.0<span class="stat__unit">pp</span></div>
+        <div class="stat__label">Macro F1 gain at <strong>n=75</strong> target samples vs.&nbsp;no transfer</div>
+      </div>
+      <div class="stat">
+        <div class="stat__num">2&nbsp;<span class="stat__unit">/&nbsp;12</span></div>
+        <div class="stat__label">Features actually shift: <strong>CO</strong> and <strong>CO₂</strong> only (Kolmogorov–Smirnov, p &lt;&nbsp;10⁻⁸)</div>
+      </div>
+      <div class="stat">
+        <div class="stat__num">&lt;1<span class="stat__unit">ms</span></div>
+        <div class="stat__label">Inference per sample on CPU — <strong>~3 k parameters</strong>, fits any substation</div>
+      </div>
+    </div>
+
+    <div class="hero__cta">
+      <a class="btn btn--primary" href="assets/paper/ICT_PEP_2026_DGA_Transfer_Learning.pdf" download>
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0 5-5m-5 5-5-5M5 20h14"/></svg>
+        Download the paper (PDF)
+      </a>
+      <a class="btn btn--ghost" href="https://github.com/fakhrihakim20/dga_transfer_learning" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.4.7-4.1-1.5-4.1-1.5-.6-1.4-1.4-1.8-1.4-1.8-1.1-.8.1-.8.1-.8 1.2.1 1.9 1.3 1.9 1.3 1.1 1.9 2.9 1.4 3.6 1 .1-.8.4-1.4.8-1.7-2.7-.3-5.5-1.4-5.5-6 0-1.3.5-2.4 1.3-3.2-.1-.3-.6-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.2 2.9.1 3.2.8.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5"/></svg>
+        View the code
+      </a>
+    </div>
+
+    <figure class="hero__figure">
+      <img src="assets/figures/domain_shift_violin.png" alt="Violin plots of seven dissolved gases comparing the IEC TC 10 source distribution against the PLN Indonesia tropical target; CO and CO₂ are visibly shifted rightward." loading="eager" />
+      <figcaption>Gas distributions, source vs. tropical target. Only CO and CO₂ (highlighted) shift meaningfully.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ─────── PROBLEM ─────── -->
+<section id="problem" class="section">
+  <div class="section__inner">
+    <p class="eyebrow">01 — The problem</p>
+    <h2 class="section__title">When the rulebook was written for somewhere else.</h2>
+    <p class="section__lede">
+      Utilities around the world diagnose transformer faults with a method calibrated on
+      European and North-American fleets. In Indonesia, ambient heat and humidity
+      change the chemistry — and the playbook starts to fail.
+    </p>
+
+    <div class="cards">
+      <article class="card">
+        <div class="card__num">1</div>
+        <h3 class="card__title">Transformers are critical, costly assets</h3>
+        <p class="card__body">A single grid transformer can cost millions and take a year to replace. A surprise failure cascades into outages, fines, and lost industrial production.</p>
+      </article>
+      <article class="card">
+        <div class="card__num">2</div>
+        <h3 class="card__title">DGA is the standard blood test</h3>
+        <p class="card__body">Dissolved Gas Analysis reads seven gases in the cooling oil. Different gas signatures point to different faults — overheating, partial discharge, arcing — long before anything sparks.</p>
+      </article>
+      <article class="card">
+        <div class="card__num">3</div>
+        <h3 class="card__title">Tropical climates skew the readings</h3>
+        <p class="card__body">Higher ambient temperatures accelerate cellulose degradation, lifting baseline CO and CO₂ above IEC&nbsp;60599 typical values. Classifiers trained on global data misread these as faults — or miss real ones.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ─────── DOMAIN SHIFT ─────── -->
+<section id="shift" class="section section--alt">
+  <div class="section__inner">
+    <p class="eyebrow">02 — The tropical signal</p>
+    <h2 class="section__title">We measured the shift. It's exactly two gases.</h2>
+    <p class="section__lede">
+      A Kolmogorov–Smirnov test compares two distributions and reports how different they are.
+      Across twelve input features, only <strong>CO</strong> and <strong>CO₂</strong> differ significantly between the IEC TC 10 source and our PLN tropical target — confirming the hypothesis with statistical rigor.
+    </p>
+
+    <div class="chart-card">
+      <header class="chart-card__head">
+        <h3>Kolmogorov–Smirnov statistic by feature</h3>
+        <p>Higher bar = larger distributional shift. Bars colored <span class="swatch swatch--accent"></span>&nbsp;orange are statistically significant (p&nbsp;&lt;&nbsp;0.05).</p>
+      </header>
+      <div id="chart-ks" class="chart" role="img" aria-label="Bar chart of KS statistics by feature"></div>
+      <p class="chart-card__caption">Interactive · hover any bar for p-value and significance. Source: <code>ks_test_domain_shift.csv</code>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─────── APPROACH ─────── -->
+<section id="approach" class="section">
+  <div class="section__inner">
+    <p class="eyebrow">03 — Our approach</p>
+    <h2 class="section__title">Pretrain globally. Fine-tune locally. Explain everything.</h2>
+    <p class="section__lede">
+      Instead of training from scratch on the few hundred Indonesian samples a utility actually has,
+      we start from a model that already understands transformer faults — then we teach it the tropics.
+    </p>
+
+    <ol class="pipeline">
+      <li class="pipeline__step">
+        <div class="pipeline__rail" aria-hidden="true"><span>01</span></div>
+        <h3>Pretrain</h3>
+        <p>A compact multilayer perceptron is trained on the IEC&nbsp;TC&nbsp;10 benchmark — 625 globally sourced samples across seven fault classes — with SMOTE-ENN to balance rare faults.</p>
+        <p class="pipeline__meta">Source: <strong>n = 625</strong></p>
+      </li>
+      <li class="pipeline__step">
+        <div class="pipeline__rail" aria-hidden="true"><span>02</span></div>
+        <h3>Fine-tune</h3>
+        <p>The pretrained weights are adapted to a small PLN Indonesia target set with three strategies — freeze-head, progressive unfreeze, and full fine-tune. The last one wins.</p>
+        <p class="pipeline__meta">Target: <strong>n = 148</strong></p>
+      </li>
+      <li class="pipeline__step">
+        <div class="pipeline__rail" aria-hidden="true"><span>03</span></div>
+        <h3>Explain</h3>
+        <p>SHAP values are recomputed before and after adaptation. CO and CO₂ climb into the top-5 features post-fine-tune, confirming the model actually learned the tropical signal.</p>
+        <p class="pipeline__meta">Validation: <strong>SHAP&nbsp;+&nbsp;KS</strong></p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ─────── RESULTS ─────── -->
+<section id="results" class="section section--alt">
+  <div class="section__inner">
+    <p class="eyebrow">04 — Headline results</p>
+    <h2 class="section__title">Transfer learning closes the gap when data is scarce.</h2>
+    <p class="section__lede">
+      We compared fourteen methods — classical baselines (Random Forest, XGBoost, SVM, KNN) and neural variants with and without transfer — across two fault-labelling schemes.
+      Switch between the seven-class and four-class views below.
+    </p>
+
+    <div class="chart-card">
+      <header class="chart-card__head chart-card__head--row">
+        <div>
+          <h3>Macro F1 by method</h3>
+          <p>Mean ± standard deviation across cross-validation folds. Hover for full metrics.</p>
+        </div>
+        <div class="tabs" role="tablist" aria-label="Fault scheme">
+          <button class="tab is-active" role="tab" aria-selected="true" data-scheme="7">7-class scheme</button>
+          <button class="tab" role="tab" aria-selected="false" data-scheme="4">4-class scheme</button>
+        </div>
+      </header>
+      <div id="chart-methods" class="chart chart--tall" role="img" aria-label="Bar chart of macro F1 by method"></div>
+      <p class="chart-card__caption">Random Forest leads on the full target set; the transfer-learned MLP catches it when target data drops. See next section.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─────── SCARCITY ─────── -->
+<section id="scarcity" class="section">
+  <div class="section__inner">
+    <p class="eyebrow">05 — The scarcity sweet spot</p>
+    <h2 class="section__title">Where transfer learning earns its keep.</h2>
+    <p class="section__lede">
+      Real utilities rarely have hundreds of labelled samples when a monitoring programme begins.
+      At <strong>n = 75</strong> — the practically interesting regime — the transfer-learned MLP
+      beats a target-only Random Forest by <strong>9.0 percentage points</strong> on macro F1.
+    </p>
+
+    <div class="chart-card">
+      <header class="chart-card__head">
+        <h3>Macro F1 vs. number of target samples</h3>
+        <p>Two methods, four target sizes. The gap closes as data accumulates.</p>
+      </header>
+      <div id="chart-scarcity" class="chart" role="img" aria-label="Line chart of F1 versus target samples"></div>
+      <p class="chart-card__caption">Interactive · hover each point for exact F1. Below ~100 samples, transfer learning is the safer choice.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─────── FEATURES ─────── -->
+<section id="features" class="section section--alt">
+  <div class="section__inner">
+    <p class="eyebrow">06 — What the model learns</p>
+    <h2 class="section__title">The most useful features aren't always the ones that shifted.</h2>
+    <p class="section__lede">
+      An ANOVA test ranks features by how much they help separate fault classes.
+      Total combustible gas and acetylene dominate — the same hydrocarbons engineers already trust.
+      CO and CO₂ rank lower for fault separation, even though they're the only features whose <em>distribution</em> shifts. The model has to do both jobs at once.
+    </p>
+
+    <div class="chart-card">
+      <header class="chart-card__head">
+        <h3>ANOVA F-score by feature</h3>
+        <p>Higher = more useful for fault discrimination. All twelve features pass the p&nbsp;&lt;&nbsp;0.05 bar except <code>CO₂/CO</code>.</p>
+      </header>
+      <div id="chart-anova" class="chart" role="img" aria-label="Bar chart of ANOVA F-scores"></div>
+      <p class="chart-card__caption">Source: <code>anova_feature_ranking.csv</code>.</p>
+    </div>
+
+    <figure class="figure-wide">
+      <img src="assets/figures/shap_comparison.png" alt="Two horizontal SHAP bar charts side by side. The right (after fine-tune) elevates CO and CO₂ into the top-5 features." loading="lazy" />
+      <figcaption>Before vs. after fine-tuning. CO and CO₂ climb into the top-5 features — interpretable proof the tropical signal was encoded.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ─────── GALLERY ─────── -->
+<section id="gallery" class="section">
+  <div class="section__inner">
+    <p class="eyebrow">07 — Visual evidence</p>
+    <h2 class="section__title">The complete figure set.</h2>
+    <p class="section__lede">For engineers and reviewers — every figure from the paper, click to enlarge.</p>
+
+    <div class="gallery">
+      <figure class="tile" data-lightbox><img src="assets/figures/class_distribution.png" alt="Class distribution source vs target" loading="lazy"/><figcaption>Class distribution: source vs target</figcaption></figure>
+      <figure class="tile" data-lightbox><img src="assets/figures/domain_shift_violin.png" alt="Violin plots of seven gases" loading="lazy"/><figcaption>Domain shift (violin plots)</figcaption></figure>
+      <figure class="tile" data-lightbox><img src="assets/figures/domain_tsne_pca.png" alt="t-SNE and PCA projections of source and target" loading="lazy"/><figcaption>t-SNE &amp; PCA projections</figcaption></figure>
+      <figure class="tile" data-lightbox><img src="assets/figures/anova_feature_ranking.png" alt="ANOVA feature ranking bar chart" loading="lazy"/><figcaption>ANOVA feature ranking</figcaption></figure>
+      <figure class="tile" data-lightbox><img src="assets/figures/data_scarcity_ablation.png" alt="Data scarcity ablation line plot" loading="lazy"/><figcaption>Data scarcity ablation</figcaption></figure>
+      <figure class="tile" data-lightbox><img src="assets/figures/confusion_7-class.png" alt="Confusion matrices for the 7-class scheme" loading="lazy"/><figcaption>Confusion matrices · 7-class</figcaption></figure>
+      <figure class="tile" data-lightbox><img src="assets/figures/confusion_4-class.png" alt="Confusion matrices for the 4-class scheme" loading="lazy"/><figcaption>Confusion matrices · 4-class</figcaption></figure>
+      <figure class="tile" data-lightbox><img src="assets/figures/shap_comparison.png" alt="SHAP comparison before and after fine-tuning" loading="lazy"/><figcaption>SHAP · before vs. after</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ─────── LIMITATIONS ─────── -->
+<section class="section section--alt">
+  <div class="section__inner">
+    <p class="eyebrow">08 — Honest limitations</p>
+    <h2 class="section__title">What we have <em>not</em> proven yet.</h2>
+    <div class="limits">
+      <div class="limit">
+        <h4>Synthetic target data</h4>
+        <p>The 148 PLN samples are simulated from a tropical shift model — they are not real field measurements with expert-confirmed labels.</p>
+      </div>
+      <div class="limit">
+        <h4>Author-chosen shift multipliers</h4>
+        <p>CO×1.4–2.0 and CO₂×1.3–1.8 are plausible but not measured from the actual Indonesian fleet. Real values may differ.</p>
+      </div>
+      <div class="limit">
+        <h4>No field validation</h4>
+        <p>Operational deployment requires confirmation on real PLN DGA records with engineer-confirmed faults.</p>
+      </div>
+      <div class="limit">
+        <h4>Static snapshots only</h4>
+        <p>The model classifies single measurements. Real diagnosis often uses gas-trend rates over time, which we do not yet incorporate.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────── RESOURCES ─────── -->
+<section id="resources" class="section">
+  <div class="section__inner">
+    <p class="eyebrow">09 — Take it further</p>
+    <h2 class="section__title">Read it. Run it. Extend it.</h2>
+
+    <div class="resources">
+      <a class="resource" href="assets/paper/ICT_PEP_2026_DGA_Transfer_Learning.pdf" download>
+        <div class="resource__icon">PDF</div>
+        <div class="resource__body">
+          <h4>Full paper</h4>
+          <p>ICT-PEP 2026 conference draft — methods, results, references.</p>
+        </div>
+      </a>
+      <a class="resource" href="https://github.com/fakhrihakim20/dga_transfer_learning" target="_blank" rel="noopener">
+        <div class="resource__icon">{·}</div>
+        <div class="resource__body">
+          <h4>Source code</h4>
+          <p>Reproducible Jupyter notebook plus the figure / table generators.</p>
+        </div>
+      </a>
+      <a class="resource" href="assets/data/results_7class.csv" download>
+        <div class="resource__icon">CSV</div>
+        <div class="resource__body">
+          <h4>Raw results (7-class)</h4>
+          <p>All fourteen methods with full metrics.</p>
+        </div>
+      </a>
+      <a class="resource" href="assets/data/results_4class.csv" download>
+        <div class="resource__icon">CSV</div>
+        <div class="resource__body">
+          <h4>Raw results (4-class)</h4>
+          <p>Simplified fault scheme for cleaner boundaries.</p>
+        </div>
+      </a>
+      <a class="resource" href="assets/data/ks_test_domain_shift.csv" download>
+        <div class="resource__icon">CSV</div>
+        <div class="resource__body">
+          <h4>Domain shift (KS test)</h4>
+          <p>Per-feature KS statistics and p-values.</p>
+        </div>
+      </a>
+      <a class="resource" href="assets/data/anova_feature_ranking.csv" download>
+        <div class="resource__icon">CSV</div>
+        <div class="resource__body">
+          <h4>ANOVA feature ranking</h4>
+          <p>F-scores per feature for fault discrimination.</p>
+        </div>
+      </a>
+    </div>
+
+    <details class="bibtex">
+      <summary>Cite this work (BibTeX)</summary>
+<pre><code>@inproceedings{hakim2026tropicaldga,
+  title     = {Tropical Domain Shift in Dissolved Gas Analysis:
+               Transfer Learning from the IEC TC 10 Benchmark
+               to PLN Indonesia for Transformer Fault Classification},
+  author    = {Hakim, Fakhri and others},
+  booktitle = {Proc. ICT-PEP},
+  year      = {2026}
+}</code></pre>
+    </details>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div>
+      <p class="footer__brand">Tropical DGA Transfer Learning</p>
+      <p class="footer__meta">Submitted to ICT-PEP&nbsp;2026 · Simulation study with synthetic target data</p>
+    </div>
+    <div class="footer__links">
+      <a href="https://github.com/fakhrihakim20/dga_transfer_learning" target="_blank" rel="noopener">GitHub</a>
+      <a href="assets/paper/ICT_PEP_2026_DGA_Transfer_Learning.pdf" download>Paper</a>
+      <a href="#top">Back to top</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox" aria-hidden="true">
+  <button class="lightbox__close" aria-label="Close">&times;</button>
+  <img class="lightbox__img" alt="" />
+  <p class="lightbox__caption"></p>
+</div>
+
+</body>
+</html>

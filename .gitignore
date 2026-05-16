@@ -1,0 +1,41 @@
+# LaTeX build artefacts
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+
+# Local agent / tooling state (not part of the project)
+.claude/
+.opencode/
+
+# Stray local references not part of the published artefact
+start.pdf
+
+# Large local models we don't want in git (keep results/figures and results/tables)
+results/models/*.pt
+results/models/*.pkl
+results/models/*.joblib
