@@ -21,7 +21,7 @@ python -m http.server 8080
 ## File map
 
 ```
-website/
+docs/
 ├── index.html              · one-page report
 ├── assets/
 │   ├── css/styles.css      · all styling
@@ -31,11 +31,11 @@ website/
 │   ├── figures/            · 8 PNG figures (copies of ../results/figures)
 │   ├── data/               · 4 CSV tables (copies of ../results/tables)
 │   └── paper/              · paper PDF
-└── .nojekyll               · so GitHub Pages serves _ paths
+└── .nojekyll               · disables Jekyll so paths starting with _ are served
 ```
 
 ## Deployment
 
-Automatic via GitHub Actions — see `.github/workflows/deploy-pages.yml` in the repo root. Pushing to `main` publishes this directory to GitHub Pages.
+GitHub Pages is configured to publish from `main` branch, `/docs` folder. Pushing to `main` updates the live site automatically — no Actions workflow required.
 
 Live URL: <https://fakhrihakim20.github.io/dga_transfer_learning/>

@@ -7,7 +7,7 @@ Code, data tables, figures, paper, and a public report website for:
 
 ## 🌐 Report website
 
-A non-technical, interactive report lives in [`website/`](website/) and is auto-published to GitHub Pages:
+A non-technical, interactive report lives in [`docs/`](docs/) and is published to GitHub Pages from `main / docs`:
 
 **→ <https://fakhrihakim20.github.io/dga_transfer_learning/>**
 
@@ -27,7 +27,7 @@ All headline charts are interactive (hover, legend toggle, 7-class / 4-class tab
 | `results/tables/` | Four CSV result tables |
 | `results/models/` | Trained model artefacts |
 | `gap_analysis_T2_tropical_DGA_transfer_learning.md` | Literature positioning notes |
-| `website/` | The public-facing report website (static HTML/CSS/JS) |
+| `docs/` | The public-facing report website (static HTML/CSS/JS, served by GitHub Pages) |
 
 ## Headline results (at a glance)
 
